@@ -9,6 +9,7 @@ from llama_index.core import (
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.readers.file import PDFReader
 from llama_index.core import Settings
+from loguru import logger
 
 load_dotenv()
 
@@ -21,6 +22,7 @@ file_extractor = {".pdf": parser}
 # check if storage already exists
 PERSIST_DIR = "./storage"
 if not os.path.exists(PERSIST_DIR):
+    logger.info(f"Index not found, creating an index in {PERSIST_DIR}")
     # load the documents and create the index
     documents = SimpleDirectoryReader(
         "./data", file_extractor=file_extractor
@@ -32,6 +34,7 @@ if not os.path.exists(PERSIST_DIR):
     # store it for later
     index.storage_context.persist(persist_dir=PERSIST_DIR)
 else:
+    logger.info(f"Index found, loading from {PERSIST_DIR}")
     # load the existing index
     storage_context = StorageContext.from_defaults(persist_dir=PERSIST_DIR)
     index = load_index_from_storage(storage_context)
